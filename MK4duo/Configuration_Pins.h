@@ -179,7 +179,7 @@
 #endif
 
 #if ENABLED(LASERBEAM)
-  #define LASER_PWR_PIN                   -1
+  #define LASER_PWR_PIN                   ORIG_LASER_PWR_PIN
   #define LASER_TTL_PIN                   -1
   #if ENABLED(LASER_PERIPHERALS)
     #define LASER_PERIPHERALS_PIN         -1

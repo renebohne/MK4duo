@@ -104,7 +104,7 @@
  *   999 : Dummy Table that ALWAYS reads 100 degC or the temperature defined below.                  *
  *                                                                                                   *
  *****************************************************************************************************/
-#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_0 0
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -171,7 +171,7 @@
 #define HEATER_3_MAXTEMP 275 // (degC)
 #define BED_MAXTEMP      150 // (degC)
 #define CHAMBER_MAXTEMP  100 // (degC)
-#define COOLER_MAXTEMP   35  // (degC) 
+#define COOLER_MAXTEMP   35  // (degC)
 
 // The minimal temperature defines the temperature below which the heater will not be enabled It is used
 // or, in case of cooler, it will switched off.
@@ -183,7 +183,7 @@
 #define HEATER_3_MINTEMP 5 // (degC)
 #define BED_MINTEMP      5 // (degC)
 #define CHAMBER_MINTEMP  5 // (degC)
-#define COOLER_MINTEMP  10 // (degC) 
+#define COOLER_MINTEMP  10 // (degC)
 
 //Preheat Constants
 #define PREHEAT_1_TEMP_HOTEND 190
@@ -256,8 +256,8 @@
  ***********************************************************************/
 //#define TEMP_STAT_LEDS
 /***********************************************************************/
- 
- 
+
+
 /***********************************************************************
  ********************** PID Settings - HOTEND **************************
  ***********************************************************************

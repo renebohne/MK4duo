@@ -106,7 +106,7 @@
  * Basic-settings can be found in Configuration_Basic.h
  * Mechanisms-settings can be found in Configuration_Xxxxxx.h (where Xxxxxx can be: Cartesian - Delta - Core - Scara)
  * Pins-settings can be found in "Configuration_Pins.h"
- * 
+ *
  */
 
 #ifndef CONFIGURATION_FEATURE_H
@@ -306,9 +306,9 @@
  ***********************************************************************/
 //#define NPR2
 #define COLOR_STEP {0, 10, 20, 30}   // CARTER ANGLE
-#define COLOR_SLOWRATE 170           // MICROSECOND delay for carter motor routine (Carter Motor Feedrate: upper value-slow feedrate)  
+#define COLOR_SLOWRATE 170           // MICROSECOND delay for carter motor routine (Carter Motor Feedrate: upper value-slow feedrate)
 #define COLOR_HOMERATE 4             // FEEDRATE for carter home
-#define MOTOR_ANGLE 1.8              // Nema angle for single step 
+#define MOTOR_ANGLE 1.8              // Nema angle for single step
 #define DRIVER_MICROSTEP 4           // Microstep moltiplicator driver (set jumper MS1-2-3) off-on-off 1/4 microstepping.
 #define CARTER_MOLTIPLICATOR 14.22   // CARTER MOLTIPLICATOR (gear ratio 13/31-10/31)
 /***********************************************************************/
@@ -531,7 +531,7 @@
  **************************************************************************/
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
-#define ABORT_ON_ENDSTOP_HIT_INIT true
+//#define ABORT_ON_ENDSTOP_HIT_INIT true
 /**************************************************************************/
 
 
@@ -673,7 +673,7 @@
 
 // not only z, but also XY in the menu. more clutter, more functions
 // not implemented for CoreXY and deltabots!
-#define BABYSTEP_XY  
+#define BABYSTEP_XY
 
 // true for inverse movements in Z
 #define BABYSTEP_INVERT_Z false
@@ -960,7 +960,7 @@
 #define FLOWMETER_MAXFREQ  55       // frequency of pulses at max flow
 
 // uncomment this to kill print job under the min flow rate, in liters/minute
-//#define MINFLOW_PROTECTION 4      
+//#define MINFLOW_PROTECTION 4
 /**************************************************************************/
 
 
@@ -1086,7 +1086,7 @@
 // :['JAPANESE', 'WESTERN', 'CYRILLIC']
 //
 #define DISPLAY_CHARSET_HD44780 JAPANESE
- 
+
 #define SHOW_BOOTSCREEN
 //#define SHOW_CUSTOM_BOOTSCREEN
 #define STRING_SPLASH_LINE1 "v" SHORT_BUILD_VERSION       // will be shown during bootup in line 1
@@ -1107,12 +1107,12 @@
 
 
 // Additional options for Graphical Displays
-// 
+//
 // Use the optimizations here to improve printing performance,
 // which can be adversely affected by graphical display drawing,
 // especially when doing several short moves, and when printing
 // on DELTA and SCARA machines.
-// 
+//
 // Some of these options may result in the display lagging behind
 // controller events, as there is a trade-off between reliable
 // printing performance versus fast display updates.
@@ -1448,7 +1448,7 @@
  * Check also Configuration_Laser.h                                       *
  *                                                                        *
  **************************************************************************/
-//#define LASERBEAM
+#define LASERBEAM
 /**************************************************************************/
 
 
@@ -1519,10 +1519,10 @@
  * Alligator Board support 16 or 32 only value                         *
  *                                                                     *
  ***********************************************************************/
-//#define USE_MICROSTEPS
+#define USE_MICROSTEPS
 
 // X Y Z E - [1,2,4,8,16,32]
-#define MICROSTEP_MODES {16, 16, 16, 16}
+#define MICROSTEP_MODES {16, 16, 1, 1}
 /***********************************************************************/
 
 
@@ -1710,7 +1710,7 @@
   #define E3_STALLCURRENT 1500
 
 #endif
-/**********************************************************************************/  
+/**********************************************************************************/
 
 
 //===========================================================================
@@ -1870,7 +1870,7 @@
  * M43 Pins info and testing                                                             *
  *                                                                                       *
  *****************************************************************************************/
-//#define PINS_DEBUGGING
+#define PINS_DEBUGGING
 /*****************************************************************************************/
 
 
@@ -1892,7 +1892,7 @@
  * Include capabilities in M115 output                                                   *
  *                                                                                       *
  *****************************************************************************************/
-//#define EXTENDED_CAPABILITIES_REPORT
+#define EXTENDED_CAPABILITIES_REPORT
 /*****************************************************************************************/
 
 
@@ -1923,10 +1923,10 @@
  *                                                                                       *
  *****************************************************************************************/
 //#define START_GCODE
-#define START_PRINTING_SCRIPT "G28\nG1 Z10 F8000"
+#define START_PRINTING_SCRIPT "G28 XY\n"
 
 //#define STOP_GCODE
-#define STOP_PRINTING_SCRIPT "G28\nM107\nM104 T0 S0\nM140 S0\nM84\nM81"
+#define STOP_PRINTING_SCRIPT "M5\nG28 XY\n"
 /*****************************************************************************************/
- 
+
 #endif

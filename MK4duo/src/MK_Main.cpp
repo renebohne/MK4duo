@@ -223,7 +223,7 @@ static uint8_t target_extruder;
 static bool relative_mode = false;
 
 // For M109 and M190, this flag may be cleared (by M108) to exit the wait loop
-volatile bool wait_for_heatup = true;
+volatile bool wait_for_heatup = false;
 
 // For M0/M1, this flag may be cleared (by M108) to exit the wait-for-user loop
 #if ENABLED(EMERGENCY_PARSER) || HAS(LCD)
@@ -442,7 +442,7 @@ float cartes[XYZ] = { 0 };
 #endif
 
 #if ENABLED(FILAMENT_SENSOR)
-  bool filament_sensor = false;                                 // M405 turns on filament_sensor control, M406 turns it off 
+  bool filament_sensor = false;                                 // M405 turns on filament_sensor control, M406 turns it off
   float filament_width_nominal = DEFAULT_NOMINAL_FILAMENT_DIA,  // Nominal filament width. Change with M404
         filament_width_meas = DEFAULT_MEASURED_FILAMENT_DIA;    // Measured filament diameter
   int8_t measurement_delay[MAX_MEASUREMENT_DELAY + 1];          // Ring buffer to delayed measurement. Store extruder factor after subtracting 100
@@ -1388,7 +1388,7 @@ static void set_home_offset(AxisEnum axis, float v) {
  * SCARA should wait until all XY homing is done before setting the XY
  * current_position to home, because neither X nor Y is at home until
  * both are at home. Z can however be homed individually.
- * 
+ *
  */
 static void set_axis_is_at_home(AxisEnum axis) {
   #if ENABLED(DEBUG_LEVELING_FEATURE)
@@ -1780,7 +1780,7 @@ static void clean_up_after_endstop_or_probe_move() {
   }
 
 #endif // Z_PROBE_SLED
-  
+
 #if ENABLED(Z_PROBE_ALLEN_KEY)
 
   void run_deploy_moves_script() {
@@ -2761,7 +2761,7 @@ static void homeaxis(AxisEnum axis) {
 
 #if ENABLED(IDLE_OOZING_PREVENT)
 
-  void IDLE_OOZING_retract(bool retracting) {  
+  void IDLE_OOZING_retract(bool retracting) {
     if (retracting && !IDLE_OOZING_retracted[active_extruder]) {
       float old_feedrate_mm_s = feedrate_mm_s;
       set_destination_to_current();
@@ -2929,7 +2929,9 @@ inline void wait_heater(bool no_wait_for_cooling = true) {
     now = millis();
     if (ELAPSED(now, next_temp_ms)) { // Print temp & remaining time every 1s while waiting
       next_temp_ms = now + 1000UL;
+      #if HAS(TEMP_0) || HAS(TEMP_BED) || ENABLED(HEATER_0_USES_MAX6675)
       print_heaterstates();
+      #endif
       #if TEMP_RESIDENCY_TIME > 0
         SERIAL_M(MSG_W);
         if (residency_start_ms) {
@@ -3128,7 +3130,7 @@ inline void wait_heater(bool no_wait_for_cooling = true) {
 
 		idle();
 		refresh_cmd_timeout(); // to prevent stepper_inactive_time from running out
-	
+
       #if TEMP_CHAMBER_RESIDENCY_TIME > 0
 
         float temp_diff = FABS(theTarget - thermalManager.degTargetChamber());
@@ -3203,7 +3205,7 @@ inline void wait_heater(bool no_wait_for_cooling = true) {
 
 		idle();
 		refresh_cmd_timeout(); // to prevent stepper_inactive_time from running out
-	
+
       #if TEMP_COOLER_RESIDENCY_TIME > 0
 
         float temp_diff = FABS(theTarget - thermalManager.degTargetCooler());
@@ -4944,7 +4946,7 @@ inline void gcode_G28() {
         planner.abl_enabled = true;
         planner.unapply_leveling(converted); // use conversion machinery
         planner.abl_enabled = false;
- 
+
         // Use the last measured distance to the bed, if possible
         if ( NEAR(current_position[X_AXIS], xProbe - (X_PROBE_OFFSET_FROM_NOZZLE))
           && NEAR(current_position[Y_AXIS], yProbe - (Y_PROBE_OFFSET_FROM_NOZZLE))
@@ -5136,7 +5138,7 @@ inline void gcode_G28() {
     // Probe all points
     bed_probe_all();
 
-    // Show calibration report      
+    // Show calibration report
     calibration_report();
 
     if (code_seen('E')) {
@@ -5245,7 +5247,7 @@ inline void gcode_G28() {
           }
           else {
             SERIAL_EM("Checking Diagonal Rod Length");
-            if (adj_diagrod_length() != 0) { 
+            if (adj_diagrod_length() != 0) {
               // If diagonal rod length has been changed .. home to endstops
               SERIAL_EM("Diagonal Rod Length changed .. Homing");
               home_delta();
@@ -5316,7 +5318,7 @@ inline void gcode_G28() {
       if (DEBUGGING(LEVELING)) SERIAL_EM("> endstops.enable(true)");
     #endif
     endstops.enable(true); // Enable endstops for next homing move
-  
+
     // Homing and deploy z probe
     if (!axis_homed[X_AXIS] || !axis_homed[Y_AXIS] || !axis_homed[Z_AXIS])
       home_delta();
@@ -5600,7 +5602,7 @@ inline void gcode_G60() {
   if (slot >= NUM_POSITON_SLOTS) {
     SERIAL_LMV(ER, MSG_INVALID_POS_SLOT, (int)NUM_POSITON_SLOTS);
     return;
-  } 
+  }
   memcpy(stored_position[slot], current_position, sizeof(current_position));
   pos_saved = true;
 
@@ -6162,7 +6164,7 @@ inline void gcode_M42() {
    *     E = Engage probe for each reading
    *     L = Number of legs of movement before probe
    *     S = Schizoid (Or Star if you prefer)
-   *  
+   *
    * This function assumes the bed has been homed.  Specifically, that a G28 command
    * as been issued prior to invoking the M48 Z-Probe repeatability measurement function.
    * Any information generated by a prior G29 Bed leveling command will be lost and need to be
@@ -6877,7 +6879,7 @@ inline void gcode_M105() {
   /**
    * M107: Fan Off
    */
-  inline void gcode_M107() { 
+  inline void gcode_M107() {
     uint16_t p = code_seen('P') ? code_value_ushort() : 0;
     if (p < FAN_COUNT) fanSpeeds[p] = 0;
   }
@@ -7271,7 +7273,9 @@ inline void gcode_M122() {
   inline void auto_report_temperatures() {
     if (auto_report_temp_interval && ELAPSED(millis(), next_temp_report_ms)) {
       next_temp_report_ms = millis() + 1000UL * auto_report_temp_interval;
+      #if HAS(TEMP_0) || HAS(TEMP_BED) || ENABLED(HEATER_0_USES_MAX6675)
       print_heaterstates();
+      #endif
       SERIAL_E;
     }
   }
@@ -8214,7 +8218,7 @@ inline void gcode_M400() { stepper.synchronize(); }
       SERIAL_EMV("Filament dia (nominal mm):", filament_width_nominal);
     }
   }
-    
+
   /**
    * M405: Turn on filament sensor for control
    */
@@ -8243,7 +8247,7 @@ inline void gcode_M400() { stepper.synchronize(); }
    * M406: Turn off filament sensor for control
    */
   inline void gcode_M406() { filament_sensor = false; }
-  
+
   /**
    * M407: Get measured filament diameter on serial output
    */
@@ -8729,7 +8733,7 @@ inline void gcode_M503() {
 inline void gcode_M530() {
 
   if (code_seen('L')) maxLayer = code_value_long();
-  
+
   if (code_seen('S') && code_value_bool()) {
     print_job_counter.start();
 
@@ -9157,7 +9161,7 @@ inline void gcode_M532() {
     // do this at the start so we can debug if needed!
     if (code_seen('D') && IsRunning()) laser.diagnostics = code_value_bool();
 
-    // Wait for the rest 
+    // Wait for the rest
     // stepper.synchronize();
     if (code_seen('S') && IsRunning()) {
       laser.intensity = code_value_float();
@@ -9180,7 +9184,7 @@ inline void gcode_M532() {
 #endif // LASERBEAM
 
 #if MECH(MUVE3D)
-  
+
   // M650: Set peel distance
   inline void gcode_M650() {
 
@@ -9194,7 +9198,7 @@ inline void gcode_M532() {
     layer_thickness = (code_seen('H') ? code_value_float() : 0.0);
 
     // Initialize tilted to false. The intent here is that you would send this command at the start of a print job, and
-    // the platform would be level when you do. As such, we assume that you either hand-cranked it to level, or executed 
+    // the platform would be level when you do. As such, we assume that you either hand-cranked it to level, or executed
     // an M654 command via manual GCode before running a new print job. If not, then the platform is currently tilted, and
     // your print job is going to go poorly.
     tilted = false;
@@ -9249,7 +9253,7 @@ inline void gcode_M532() {
         // Power Off
         case 0: {
           // 0614000400341101005E
-          const byte off[] = {0x06, 0x14, 0x00, 0x04, 0x00, 
+          const byte off[] = {0x06, 0x14, 0x00, 0x04, 0x00,
                               0x34, 0x11, 0x01, 0x00, 0x5E};
           DLPSerial.write(off, sizeof(off));
         }
@@ -9576,7 +9580,7 @@ inline void gcode_T(uint8_t tool_id) {
   #endif
 
   #if ENABLED(CNCROUTER)
-    
+
     bool wait = true;
     bool raise_z = false;
 
@@ -9914,7 +9918,7 @@ void tool_change(const uint8_t tmp_extruder, const float fr_mm_s/*=0.0*/, bool n
       // Set the new active extruder
       previous_extruder = active_extruder;
       active_extruder = tmp_extruder;
-      
+
       UNUSED(fr_mm_s);
       UNUSED(no_move);
 
@@ -9953,7 +9957,7 @@ void tool_change(const uint8_t tmp_extruder, const float fr_mm_s/*=0.0*/, bool n
 
       // Save current position to destination, for use later
       set_destination_to_current();
-      
+
       #if ENABLED(DUAL_X_CARRIAGE)
 
         #if ENABLED(DEBUG_LEVELING_FEATURE)
@@ -10059,7 +10063,7 @@ void tool_change(const uint8_t tmp_extruder, const float fr_mm_s/*=0.0*/, bool n
             stepper.synchronize();
           }
         #endif
-        
+
         /**
          * Set current_position to the position of the new nozzle.
          * Offsets are based on linear distance, so we need to get
@@ -10198,10 +10202,10 @@ void tool_change(const uint8_t tmp_extruder, const float fr_mm_s/*=0.0*/, bool n
   SERIAL_LMV(ECHO, MSG_ACTIVE_DRIVER, (int)active_driver);
   SERIAL_LMV(ECHO, MSG_ACTIVE_EXTRUDER, (int)active_extruder);
 }
-  
+
 #if ENABLED(CNCROUTER)
 
-  // TODO: manage auto tool change 
+  // TODO: manage auto tool change
   void tool_change_cnc(uint8_t tool_id, bool wait/*=true*/, bool raise_z/*=true*/) {
 
     #if !ENABLED(CNCROUTER_AUTO_TOOL_CHANGE)
@@ -10382,7 +10386,7 @@ void process_next_command() {
 
       // G17 - G19: XXX CNC plane selection
       // G17 -> XY (default)
-      // G18 -> ZX 
+      // G18 -> ZX
       // G19 -> YZ
 
       #if ENABLED(NOZZLE_CLEAN_FEATURE)
@@ -10414,7 +10418,7 @@ void process_next_command() {
       #if HAS(BED_PROBE) && NOMECH(DELTA)
         case 30: // G30 Single Z Probe
           gcode_G30(); break;
-        
+
         #if ENABLED(Z_PROBE_SLED)
           case 31: // G31: dock the sled
             gcode_G31(); break;
@@ -10437,13 +10441,13 @@ void process_next_command() {
       #endif
 
       // G40 Compensation Off XXX CNC
-      // G54-G59 Coordinate system selection (CNC XXX)      
+      // G54-G59 Coordinate system selection (CNC XXX)
 
       case 60: // G60 Saved Coordinates
         gcode_G60(); break;
       case 61: // G61 Restore Coordinates
         gcode_G61(); break;
-   
+
       // G80: Cancel Canned Cycle (XXX CNC)
 
       case 90: // G90
@@ -10944,7 +10948,7 @@ void process_next_command() {
       #if ENABLED(LASERBEAM)
         case 649: // M649 set laser options
           gcode_M649(); break;
-      #endif 
+      #endif
 
       #if MECH(MUVE3D)
         case 650: // M650: Set peel distance
@@ -11181,7 +11185,7 @@ void ok_to_send() {
       deltaParams.endstop_adj[Z_AXIS] += z_endstop;
 
       deltaParams.inverse_kinematics_DELTA(current_position);
-      planner.set_position_mm(delta[A_AXIS] - x_endstop , delta[B_AXIS] - y_endstop, delta[C_AXIS] - z_endstop, current_position[E_AXIS]);  
+      planner.set_position_mm(delta[A_AXIS] - x_endstop , delta[B_AXIS] - y_endstop, delta[C_AXIS] - z_endstop, current_position[E_AXIS]);
       stepper.synchronize();
     }
 
@@ -11376,9 +11380,9 @@ void ok_to_send() {
         SERIAL_EMV("Bed level center = ", bed_level_c);
 
         // set initial direction and magnitude for delta radius adjustment
-        adj_attempts = 0; 
-        adj_dRadius = 0; 
-        adjdone_vector = 0.01; 
+        adj_attempts = 0;
+        adj_dRadius = 0;
+        adjdone_vector = 0.01;
 
         do {
           deltaParams.radius += adj_dRadius;
@@ -11396,7 +11400,7 @@ void ok_to_send() {
 
           // Adjustment complete?
           if ((bed_level_c >= -ac_prec) and (bed_level_c <= ac_prec)) {
-            //Done to within acprec .. but done within adjdone_vector? 
+            //Done to within acprec .. but done within adjdone_vector?
             if ((bed_level_c >= -adjdone_vector) and (bed_level_c <= adjdone_vector))
               adj_done = true;
             else {
@@ -11419,7 +11423,7 @@ void ok_to_send() {
 
           // Overshot target? .. reverse and scale down adjustment
           if (((bed_level_c < 0) and (adj_dRadius < 0)) or ((bed_level_c > 0) and (adj_dRadius > 0))) adj_dRadius = -(adj_dRadius / 2);
-  
+
         } while (adj_done == false);
 
         return true;
@@ -11511,7 +11515,7 @@ void ok_to_send() {
           if (bed_level_ox < bed_level_oy) adj_val = adj_mag;
           if (bed_level_ox > bed_level_oy) adj_val = -adj_mag;
         }
-           
+
         if ((adj_val > 0) and (adj_prv < 0)) {
           adj_mag = adj_mag / 2;
           adj_val = adj_mag;
@@ -11740,7 +11744,7 @@ void set_current_from_steppers_for_axis(const AxisEnum axis) {
 
     // Restore destination from stack
     memcpy(destination, end, sizeof(end));
-    mesh_line_to_destination(fr_mm_s, x_splits, y_splits);  
+    mesh_line_to_destination(fr_mm_s, x_splits, y_splits);
   }
 
 #elif ENABLED(AUTO_BED_LEVELING_BILINEAR) && !IS_KINEMATIC
@@ -12074,7 +12078,7 @@ static void report_current_position() {
 
     uint16_t segments = FLOOR(mm_of_travel / (MM_PER_ARC_SEGMENT));
     if (segments == 0) segments = 1;
-    
+
     /**
      * Vector rotation by transformation matrix: r is the original vector, r_T is the rotated vector,
      * and phi is the angle of rotation. Based on the solution approach by Jens Geisler.
@@ -12238,13 +12242,13 @@ static void report_current_position() {
    * Morgan SCARA Inverse Kinematics. Results in delta[].
    *
    * See http://forums.reprap.org/read.php?185,283327
-   * 
+   *
    * Maths and first version by QHARLEY.
    * Integrated and slightly restructured by Joachim Cerny.
    */
   void inverse_kinematics(const float logical[XYZ]) {
 
-    static float C2, S2, SK1, SK2, THETA, PSI; 
+    static float C2, S2, SK1, SK2, THETA, PSI;
 
     float sx = RAW_X_POSITION(logical[X_AXIS]) - SCARA_offset_x,  // Translate SCARA to standard X Y
           sy = RAW_Y_POSITION(logical[Y_AXIS]) - SCARA_offset_y;  // With scaling factor.
@@ -12504,7 +12508,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) {
   #endif
 
   #if HAS(KILL)
-    
+
     // Check if the kill button was pressed and wait just in case it was an accidental
     // key kill key press
     // -------------------------------------------------------------------------------
@@ -12537,7 +12541,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) {
         homeDebounceCount = 0;
     }
   #endif
-    
+
   #if HAS(CONTROLLERFAN)
     controllerFan(); // Check if fan should be turned on to cool stepper drivers down
   #endif
@@ -12884,10 +12888,10 @@ void setup() {
   #endif
 
   SERIAL_INIT(BAUDRATE);
-  SERIAL_L(START);
+  //SERIAL_L(START);
 
   // Check startup
-  SERIAL_S(ECHO);
+  //SERIAL_S(ECHO);
   const byte mcu = HAL::get_reset_source();
   if (mcu & 1) SERIAL_EM(MSG_POWERUP);
   if (mcu & 2) SERIAL_EM(MSG_EXTERNAL_RESET);
@@ -12896,15 +12900,15 @@ void setup() {
   if (mcu & 32) SERIAL_EM(MSG_SOFTWARE_RESET);
   HAL::clear_reset_source();
 
-  SERIAL_LM(ECHO, BUILD_VERSION);
+  //SERIAL_LM(ECHO, BUILD_VERSION);
 
   #if ENABLED(STRING_DISTRIBUTION_DATE) && ENABLED(STRING_CONFIG_H_AUTHOR)
-    SERIAL_LM(ECHO, MSG_CONFIGURATION_VER STRING_DISTRIBUTION_DATE MSG_AUTHOR STRING_CONFIG_H_AUTHOR);
-    SERIAL_LM(ECHO, MSG_COMPILED __DATE__);
+    //SERIAL_LM(ECHO, MSG_CONFIGURATION_VER STRING_DISTRIBUTION_DATE MSG_AUTHOR STRING_CONFIG_H_AUTHOR);
+    //SERIAL_LM(ECHO, MSG_COMPILED __DATE__);
   #endif // STRING_DISTRIBUTION_DATE
 
-  SERIAL_SMV(ECHO, MSG_FREE_MEMORY, HAL::getFreeRam());
-  SERIAL_EMV(MSG_PLANNER_BUFFER_BYTES, (int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
+  //SERIAL_SMV(ECHO, MSG_FREE_MEMORY, HAL::getFreeRam());
+  //SERIAL_EMV(MSG_PLANNER_BUFFER_BYTES, (int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 
   // Send "ok" after commands by default
   for (int8_t i = 0; i < BUFSIZE; i++) send_ok[i] = true;
@@ -13042,6 +13046,15 @@ void setup() {
     set_bltouch_deployed(true);        // reset it. Also needs to deploy and stow to clear the
     set_bltouch_deployed(false);       // error condition.
   #endif
+
+
+  //MegaPi has no pullups on these pins, so we drive them high with the mcu
+  pinMode(ORIG_X_RESET_PIN, INPUT_PULLUP);
+  pinMode(ORIG_X_SLEEP_PIN, INPUT_PULLUP);
+
+  pinMode(ORIG_Y_RESET_PIN, INPUT_PULLUP);
+  pinMode(ORIG_Y_SLEEP_PIN, INPUT_PULLUP);
+
 
 }
 

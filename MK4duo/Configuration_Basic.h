@@ -63,13 +63,13 @@
 
 // Enable the Bluetooth serial interface
 //#define BLUETOOTH
-#define BLUETOOTH_PORT 1
-#define BLUETOOTH_BAUD 115200
+//#define BLUETOOTH_PORT 1
+//#define BLUETOOTH_BAUD 115200
 
 // User-specified version info of this build to display in [Pronterface, etc] terminal window during
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
-#define STRING_CONFIG_H_AUTHOR "(none, default config)"   // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(rb, Laserbot config)"   // Who made the changes.
 
 // Define this to set a unique identifier for this printer, (Used by some programs to differentiate between machines)
 // You can use an online service to generate a random UUID. (eg http://www.uuidgenerator.net/version4)
@@ -78,11 +78,11 @@
 // Kill Method
 // 0 - Disable heaters, wait forever
 // 1 - Reset controller. Will not reset separate communication chips!
-#define KILL_METHOD 0
+#define KILL_METHOD 1
 
 // Some particular clients re-start sending commands only after receiving a 'wait' when there is a bad serial-connection.
 // Milliseconds
-#define NO_TIMEOUTS 1000
+//#define NO_TIMEOUTS 1000
 // Uncomment to include more info in ok command
 //#define ADVANCED_OK
 
@@ -112,7 +112,7 @@
  * See: https://github.com/MagoKimbra/MK4duo/blob/master/Documentation/Hardware.md *
  *                                                                                       *
  *****************************************************************************************/
-#define MOTHERBOARD BOARD_RAMPS_13_HFB
+#define MOTHERBOARD BOARD_MEGAPI
 /*****************************************************************************************/
 
 

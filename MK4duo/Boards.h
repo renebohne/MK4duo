@@ -21,6 +21,7 @@
 * 301 BOARD_RAMBO             - Rambo
 * 302 BOARD_MINIRAMBO         - Mini Rambo
 * 316 BOARD_PIBOT             - PiBot Controller Rev2.0 
+* 317 BOARD_MEGAPI            - Makeblocks MegaPi (Laserbot)
 *
 *   4 BOARD_DUEMILANOVE_328P  - Duemilanove w/ ATMega328P pin assignment
 *  40 BOARD_MKS_BASE          - Arduino Mega2560 with RAMPS v1.4 pin assignments
@@ -98,6 +99,7 @@
 #define BOARD_RAMBO             301   // Rambo
 #define BOARD_MINIRAMBO         302   // Mini-Rambo
 #define BOARD_PIBOT             316   // PiBot Controller Rev2.0
+#define BOARD_MEGAPI            317   // Makeblocks MegaPi (Laserbot)
 
 #define BOARD_DUEMILANOVE_328P  4     // Duemilanove w/ ATMega328P pin assignments
 #define BOARD_MKS_BASE          40    // MKS BASE 1.0

@@ -678,7 +678,7 @@ void Stepper::isr() {
           #if ENABLED(LASER_PULSE_METHOD)
             uint32_t ulValue = current_block->laser_raster_intensity_factor * 255;
             laser_pulse(ulValue, current_block->laser_duration);
-            laser.time += current_block->laser_duration / 1000; 
+            laser.time += current_block->laser_duration / 1000;
           #else
             laser_fire(current_block->laser_intensity);
           #endif
@@ -691,21 +691,21 @@ void Stepper::isr() {
         #if ENABLED(LASER_RASTER)
           if (current_block->laser_mode == RASTER && current_block->laser_status == LASER_ON) { // Raster Firing Mode
             #if ENABLED(LASER_PULSE_METHOD)
-              uint32_t ulValue = current_block->laser_raster_intensity_factor * 
+              uint32_t ulValue = current_block->laser_raster_intensity_factor *
                                  current_block->laser_raster_data[counter_raster];
               laser_pulse(ulValue, current_block->laser_duration);
               counter_raster++;
-              laser.time += current_block->laser_duration / 1000; 
+              laser.time += current_block->laser_duration / 1000;
             #else
               // For some reason, when comparing raster power to ppm line burns the rasters were around 2% more powerful
               // going from darkened paper to burning through paper.
-              laser_fire(current_block->laser_raster_data[counter_raster]); 
+              laser_fire(current_block->laser_raster_data[counter_raster]);
             #endif
             if (laser.diagnostics) SERIAL_MV("Pixel: ", (float)current_block->laser_raster_data[counter_raster]);
             counter_raster++;
           }
         #endif // LASER_RASTER
-        
+
         #if ENABLED(ARDUINO_ARCH_SAM)
           counter_L -= 1000 * current_block->step_event_count;
         #else
@@ -863,7 +863,7 @@ void Stepper::isr() {
       old_advance = advance_whole;
 
     #endif // ADVANCE or LIN_ADVANCE
-    
+
     #if ENABLED(ADVANCE) || ENABLED(LIN_ADVANCE)
       eISR_Rate = ADV_RATE(timer, step_loops);
     #endif
@@ -995,7 +995,7 @@ void Stepper::isr() {
           while ((uint32_t)(TCNT0 - pulse_start) < STEP_PULSE_CYCLES - CYCLES_EATEN_BY_E) { /* nada */ }
         #endif
       #endif
-      
+
       STOP_E_PULSE(0);
       #if DRIVER_EXTRUDERS > 1
         STOP_E_PULSE(1);
@@ -1031,7 +1031,7 @@ void Stepper::isr() {
 
     // Run Advance stepping ISR if flagged
     if (!nextAdvanceISR) advance_isr();
-  
+
     // Is the next advance ISR scheduled before the next main ISR?
     if (nextAdvanceISR <= nextMainISR) {
       // Set up the next interrupt
@@ -1050,7 +1050,7 @@ void Stepper::isr() {
       // Will call Stepper::isr on the next interrupt
       nextMainISR = 0;
     }
-  
+
     // Don't run the ISR faster than possible
     #if ENABLED(ARDUINO_ARCH_SAM)
       HAL_TIMER_TYPE  stepper_timer_count = HAL_timer_get_count(STEPPER_TIMER),
@@ -1508,7 +1508,7 @@ void Stepper::report_positions() {
       WRITE(E1_STEP_PIN, INVERT_E_STEP_PIN);
       HAL::delayMicroseconds(COLOR_SLOWRATE);
     }
-  }  
+  }
 #endif //NPR2
 
 #if ENABLED(BABYSTEPPING)
@@ -1673,14 +1673,17 @@ void Stepper::report_positions() {
     #if HAS(MICROSTEPS_X)
       SET_OUTPUT(X_MS1_PIN);
       SET_OUTPUT(X_MS2_PIN);
+      SET_OUTPUT(X_MS3_PIN);
     #endif
     #if HAS(MICROSTEPS_Y)
       SET_OUTPUT(Y_MS1_PIN);
       SET_OUTPUT(Y_MS2_PIN);
+      SET_OUTPUT(Y_MS3_PIN);
     #endif
     #if HAS(MICROSTEPS_Z)
       SET_OUTPUT(Z_MS1_PIN);
       SET_OUTPUT(Z_MS2_PIN);
+      SET_OUTPUT(Z_MS3_PIN);
     #endif
     #if HAS(MICROSTEPS_E0)
       SET_OUTPUT(E0_MS1_PIN);
@@ -1733,6 +1736,10 @@ void Stepper::report_positions() {
         #endif
       }
     #endif
+
+    //TEST CODE! TODO!!!
+    WRITE(X_MS3_PIN, HIGH);
+    WRITE(Y_MS3_PIN, HIGH);
   }
 
   void Stepper::microstep_mode(uint8_t driver, uint8_t stepping_mode) {
