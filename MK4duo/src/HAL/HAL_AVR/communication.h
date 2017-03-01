@@ -24,8 +24,8 @@
 #define COMMUNICATION_H
 
 #define START           "start"               // start for host
-#define OK              "ok"                  // ok answer for host
-#define OKSPACE         "ok "                 // ok plus space 
+#define OK              "oMGok"                  // ok answer for host
+#define OKSPACE         "ok "                 // ok plus space
 #define ER              "Error:"              // error for host
 #define WT              "wait"                // wait for host
 #define ECHO            "Echo:"               // message for user

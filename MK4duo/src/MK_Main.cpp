@@ -12888,7 +12888,7 @@ void setup() {
   #endif
 
   SERIAL_INIT(BAUDRATE);
-  //SERIAL_L(START);
+  SERIAL_L(START);
 
   // Check startup
   //SERIAL_S(ECHO);
